@@ -36,6 +36,30 @@ class _PhotographPageState extends State<PhotographPage> {
     await _isolateUtils.initIsolate();
   }
 
+Future<void> _pickImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+      final image = Image(image: FileImage(_imageFile!));
+      _controller = null;  //在选择照片时，要把视频变量赋null，这样如果前面非空也不会在显示
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _controller = VideoPlayerController.file(File(pickedFile.path))
+        ..initialize().then((_) {
+          setState(() {});
+          _controller?.play();
+        });
+      _imageFile = null;  //在选择视频时，要把照片变量赋null，这样如果前面非空也不会在显示
+    }
+  }
+
+
   @override
   void dispose() {
     super.dispose();
